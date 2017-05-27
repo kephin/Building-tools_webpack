@@ -17,11 +17,11 @@ Modern web development, like SPA, needs a gigantic chunk of JavaScript code, whi
 
 In the module base of world, rather than having a few very large files in JavaScript, we tend to have many small files.
 
-:+1: *Benefits*: It's more clear where code locates in our project
+:+1: *Benefits*: It's more clear where code locates in our project.
 
 :-1: *Problems*:
-- Load order: We need to make sure the order of our code executed
-- Performance: Having many JavaScript files and loading them over HTTP connection is considered a bad idea in performance standpoint
+- Load order: We need to make sure the order of our code executed.
+- Performance: Having many JavaScript files and loading them over HTTP connection is considered a bad idea in performance standpoint.
 
 The purpose of webpack is to take a big collection of tiny JavaScript modules and merge them into one big JavaScript file. Also ensuring each module is executing in the correct order.
 
@@ -31,10 +31,10 @@ The purpose of webpack is to take a big collection of tiny JavaScript modules an
 $ npm install webpack --save-dev
 ```
 
-After installation, we need to create **webpack.config.js** inside the project folder. And there are two configuration that must be provided to webpack in order to run properly, which are **Entry property** and **Output property**
+After installation, we need to create **webpack.config.js** inside the project folder. And there are two configuration that must be provided to webpack in order to run properly, which are **Entry property** and **Output property**.
 
-- Entry property defines the **entry point** of the application
-- Output property defines where should we output the bundled file
+- Entry property: Defines the **entry point** of the application.
+- Output property: Defines where should we output the bundled file.
 
 ```javascript
 // webpack.config.js
@@ -52,18 +52,18 @@ const config = {
 module.exports = config;
 ```
 
-Add the **build** script in package.json
+Add the **build** script.
 
 ```javascript
 // package.json
 {
-    "scripts": {
+  "scripts": {
     "build": "webpack"
   },
 }
 ```
 
-Run webpack
+Now we can run webpack.
 
 ```bash
 $ npm run build
