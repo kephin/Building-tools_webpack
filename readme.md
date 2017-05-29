@@ -5,6 +5,7 @@
 |1.|[Why do we use building tools?](#why-do-we-use-building-tools)|
 |2.|[Installation and configuration](#installation-and-configuration)|
 |3.|[Handling project assets](#handling-project-assets)|
+|4.|[Webpack dev server](#webpack-dev-server)|
 
 ### Why do we use building tools?
 
@@ -108,3 +109,37 @@ const config = {
   ]
 };
 ```
+
+### Webpack Dev Server
+
+Installation via npm
+
+```bash
+$ npm install -D webpack-dev-server
+```
+
+Script configuration
+
+```javascript
+{
+  "scripts": {
+    "serve": "webpack-dev-server"
+  },
+}
+```
+
+No when we run
+
+```bash
+$ npm serve
+```
+
+**webpack-dev-server** will try to build the project and start the server on *http://localhost:8080*
+
+**webpack-dev-server** will watch for any changes that we made to our project files, and when it sees changes, it will automatically rebuild the project for us. The key point here is: It doesn't rebuild the whole project, it only rebuild the changed file. The benefit is we can dramatically reduce the build time.
+
+If you change the webpack.config.js file, you have to restart the **webpack-dev-server**.
+
+When you run **webpack-dev-server**, it internally will execute **webpack** but it stops **webpack** from actually saving any built files in our project directory. So we will not see the built files in the project folder.
+
+**webpack-dev-server** is only for development and not for production use.
