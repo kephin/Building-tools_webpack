@@ -5,7 +5,8 @@
 |1.|[Why do we use building tools?](#why-do-we-use-building-tools)|
 |2.|[Installation and configuration](#installation-and-configuration)|
 |3.|[Handling project assets](#handling-project-assets)|
-|4.|[Webpack dev server](#webpack-dev-server)|
+|4.|[Enhance Performance with Code splitting](#enhance-performance-with-code-splitting)|
+|45.|[Webpack dev server](#webpack-dev-server)|
 
 ### Why do we use building tools?
 
@@ -110,6 +111,64 @@ const config = {
 };
 ```
 
+### Enhance Performance with Code splitting
+
+Webpack allows us to separate our JavaScript code and only load up certain part of the code base while in the particular part of our application.
+
+With code splitting, webpack splits bundle.js output into separate individual files and then programmatically decides when to load up different piece of bundle inside our code base. In other words, we can control exactly when to load up different modules to show different code inside our project.
+
+|#|Content|
+|:---:|:---|
+|1.|[3rd party libraries](#code-splitting---3rd-party-libraries)|
+|2.|[CSS](#code-splitting---css)|
+|3.|[Asynchronous](#code-splitting---asynchronous)|
+
+#### Code splitting - 3rd party libraries
+
+#### Code splitting - CSS
+
+#### Code splitting - Asynchronous
+
+This allows you to serve a minimal bootstrap bundle first and to asynchronously load additional features later
+
+The following code shows that webpack do not load *image_viewer.js* at the beginning, and will only import it after the user click on the button.
+
+First, we need to install the *syntax-dynamic-import* plugin for the use of  **import**.
+
+```javascript
+// webpack.config.js
+const config = {
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          presets: ['env'],
+          plugins: ['syntax-dynamic-import'],
+        },
+      }],
+    }],
+  },
+};
+
+```
+
+```javascript
+// index.js
+const button = document.createElement('button');
+button.innerText = 'Click me';
+button.onclick() = () => {
+  import('./image_viewer').then(module => module.default());
+}
+document.body.appendChild('button');
+```
+
+System.import('URL'):
+ - When we execute this function call, the browser will reach out back to the server with the URL to fetch the module and send back to the client in order to be executed.
+ - Asynchronous
+
 ### Webpack Dev Server
 
 Installation via npm
@@ -140,6 +199,6 @@ $ npm serve
 
 If you change the webpack.config.js file, you have to restart the **webpack-dev-server**.
 
-When you run **webpack-dev-server**, it internally will execute **webpack** but it stops **webpack** from actually saving any built files in our project directory. So we will not see the built files in the project folder.
+When you run **webpack-dev-server**, it internally will execute **webpack** but it stops **webpack** from actually saving any built files in our project directory, instead, it saves all the files in memory. So we will not see the built files in the project folder.
 
 **webpack-dev-server** is only for development and not for production use.
