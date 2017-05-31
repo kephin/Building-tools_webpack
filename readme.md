@@ -220,6 +220,23 @@ module.exports = {
 }
 ```
 
+**rimraf**
+
+Using **rimraf** to remove old hashed bundle files when compiling.
+
+```bash
+$ npm install rimraf -D
+```
+
+```javascript
+{
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack"
+  }
+}
+```
+
 #### Code splitting - CSS
 
 To be able to utilize the browser's ability to load CSS asynchronously and parallel. Webpack can help with this problem by bundling the CSS separately using the **ExtractTextWebpackPlugin**.
