@@ -125,6 +125,101 @@ With code splitting, webpack splits bundle.js output into separate individual fi
 
 #### Code splitting - 3rd party libraries
 
+Bundling application code with 3rd party code would be inefficient. This is because the browser can cache asset files based on the cache header and files can be cached without needing to call the CDN again if its contents don't change.
+
+We can do this only when we separate the bundles for **vendor** and **application** code.
+
+**CommonsChunkPlugin**
+
+To make sure don't get duplicated 3rd party libraries in bundle.js and vendor.js, we use **CommonsChunkPlugin** to extract all the common modules from different bundles and add them to the common bundle.
+
+**HtmlWebpackPlugin**
+
+We use **HtmlWebpackPlugin** to automatically generate an HTML5 template including all the webpack bundles in the body instead of creating manually.
+
+This is especially useful for webpack bundles that includes a hash in the filename which changes on every compilation.
+
+```javascript
+const webpack = require('webpack');
+const path = require('path');
+
+const VENDOR_LIBS = ['react', 'lodash', 'redux', 'react-redux', 'react-router', 'faker'];
+
+module.exports = {
+  entry: {
+    // separate the bundles
+    bundle: './src/index',
+    vendor: VENDOR_LIBS,
+  },
+  output: {
+    path: path.join(__dirname, 'dist'),
+    // dynamically update the name
+    filename: '[name].js',
+  },
+  plugins: [
+    // extract common bundles to vendor.js
+    new webpack.optimize.CommonsChunkPlugin({ name: 'vendor' }),
+    // create a html from template file
+    new HtmlWebpackPlugin({ template: 'src/index.html' })
+  ],
+}
+```
+
+**Implicit Common Vendor Chunk**
+
+Or we can configure a CommonsChunkPlugin instance to only accept vendor libraries.
+
+```javascript
+const webpack = require('webpack');
+const path = require('path');
+
+module.exports = {
+  entry: {
+    bundle: './src/index',
+  },
+  output: {
+    path: path.join(__dirname, 'dist'),
+    // dynamically update the name
+    filename: '[name].js',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({ template: 'src/index.html' }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks(module) {
+       // this assumes your vendor imports exist in the node_modules directory
+       return module.context && module.context.indexOf('node_modules') !== -1;
+      }
+    })
+  ],
+}
+```
+
+**Cache Busting**
+
+We need to rename our output bundle.js and vendor.js to make sure the browser is clear on when the files content have changed. So the browser can re-download the files instead of using the cache files.
+
+This process is called **cache busting**, and what we are going to do is to add hash in the filename.
+
+```javascript
+module.exports = {
+  entry: {
+    bundle: './src/index',
+    vendor: VENDOR_LIBS,
+  },
+  output: {
+    path: path.join(__dirname, 'dist'),
+    // add hash in the filename
+    filename: '[name].[chunkhash].js',
+  },
+  plugins: [
+    // add manifest.js
+    new webpack.optimize.CommonsChunkPlugin({ names: ['vendor', 'manifest'] }),
+    new HtmlWebpackPlugin({ template: 'src/index.html' })
+  ],
+}
+```
+
 #### Code splitting - CSS
 
 To be able to utilize the browser's ability to load CSS asynchronously and parallel. Webpack can help with this problem by bundling the CSS separately using the **ExtractTextWebpackPlugin**.
