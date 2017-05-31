@@ -6,7 +6,7 @@
 |2.|[Installation and configuration](#installation-and-configuration)|
 |3.|[Handling project assets](#handling-project-assets)|
 |4.|[Enhance Performance with Code splitting](#enhance-performance-with-code-splitting)|
-|45.|[Webpack dev server](#webpack-dev-server)|
+|5.|[Webpack dev server](#webpack-dev-server)|
 
 ### Why do we use building tools?
 
@@ -99,7 +99,7 @@ const webpack = require('webpack');
 const config = {
   module: {
     rules: [{
-      test: /\.(jpe?g|png|gif|svg)$/,
+      test: /\.(jpe?g|png|gif|svg)$/i,
       use: [{ loader: 'url-loader', options: { limit: 40000 } }, 'image-webpack-loader']
     }]
   },
@@ -129,11 +129,13 @@ With code splitting, webpack splits bundle.js output into separate individual fi
 
 #### Code splitting - Asynchronous
 
-This allows you to serve a minimal bootstrap bundle first and to asynchronously load additional features later
+This allows you to serve a minimal bootstrap bundle first and to asynchronously load additional features later.
 
-The following code shows that webpack do not load *image_viewer.js* at the beginning, and will only import it after the user click on the button.
+First of all, we need to install the *syntax-dynamic-import* plugin in order to use **import** syntax.
 
-First, we need to install the *syntax-dynamic-import* plugin for the use of  **import**.
+```bash
+$ npm install babel-plugin-syntax-dynamic-import -D
+```
 
 ```javascript
 // webpack.config.js
@@ -146,6 +148,7 @@ const config = {
         loader: 'babel-loader',
         options: {
           presets: ['env'],
+          // add plugins for import syntax
           plugins: ['syntax-dynamic-import'],
         },
       }],
@@ -154,6 +157,8 @@ const config = {
 };
 
 ```
+
+The following code shows that webpack do not load *image_viewer.js* at the beginning, and will only import it after the user click on the button.
 
 ```javascript
 // index.js
