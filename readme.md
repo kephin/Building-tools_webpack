@@ -127,6 +127,29 @@ With code splitting, webpack splits bundle.js output into separate individual fi
 
 #### Code splitting - CSS
 
+To be able to utilize the browser's ability to load CSS asynchronously and parallel. Webpack can help with this problem by bundling the CSS separately using the **ExtractTextWebpackPlugin**.
+
+```javascript
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'css-loader'
+        })
+      }
+    ]
+  },
+  plugins: [
+    new ExtractTextPlugin('styles.css'),
+  ]
+}
+```
+
 #### Code splitting - Asynchronous
 
 This allows you to serve a minimal bootstrap bundle first and to asynchronously load additional features later.
