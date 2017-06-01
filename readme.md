@@ -76,7 +76,7 @@ $ npm run build
 
 :floppy_disk: **Loaders**
 
-Module loaders are doing some **pre-processing** on files before they are added to the bundle.js, such as transpiling to ES6 / 7 code, handling assets like .css, .jpg, etc.
+Module loaders are doing some **pre-processing** on files before they are added to the bundle.js, such as transpiling for ES6/7 code, handling assets like .css, .jpg, etc.
 
 Two configurations should be added in module.rules:
 
@@ -165,7 +165,38 @@ We can do this only when we separate the bundles for **vendor** and **applicatio
   }
   ```
 
-- Implicit Common Vendor Chunk
+- Cache Busting
+
+  We need to rename our output bundle.js and vendor.js to make sure the browser is clear on when the files content have changed. So the browser can re-download the files instead of using the cache files.
+
+  This process is called **cache busting**, and what we are going to do is to add hash in the filename.
+
+- Manifest
+
+  On every build, webpack generates some *webpack runtime code*, which helps webpack do its job. When there is a single bundle, the runtime code resides in it. But when multiple bundles are generated, the runtime code is extracted into the common module, here the *vendor* file.
+
+  So to prevent this, we need to extract out the runtime code into the manifest file. Even though we are creating another bundle, the overhead is offset by the long term caching benefits that we obtain on the vendor file.
+
+  ```javascript
+  module.exports = {
+    entry: {
+      bundle: './src/index',
+      vendor: VENDOR_LIBS,
+    },
+    output: {
+      path: path.join(__dirname, 'dist'),
+      // add hash in the filename
+      filename: '[name].[chunkhash].js',
+    },
+    plugins: [
+      // add manifest.js
+      new webpack.optimize.CommonsChunkPlugin({ names: ['vendor', 'manifest'] }),
+      new HtmlWebpackPlugin({ template: 'src/index.html' })
+    ],
+  }
+  ```
+
+- Implicit Common Vendor Chunk && Cache busting
 
   Or we can configure a CommonsChunkPlugin instance to only accept vendor libraries.
 
@@ -184,6 +215,7 @@ We can do this only when we separate the bundles for **vendor** and **applicatio
     },
     plugins: [
       new HtmlWebpackPlugin({ template: 'src/index.html' }),
+      new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         minChunks(module) {
@@ -191,31 +223,6 @@ We can do this only when we separate the bundles for **vendor** and **applicatio
          return module.context && module.context.indexOf('node_modules') !== -1;
         }
       })
-    ],
-  }
-  ```
-
-- Cache Busting
-
-  We need to rename our output bundle.js and vendor.js to make sure the browser is clear on when the files content have changed. So the browser can re-download the files instead of using the cache files.
-
-  This process is called **cache busting**, and what we are going to do is to add hash in the filename.
-
-  ```javascript
-  module.exports = {
-    entry: {
-      bundle: './src/index',
-      vendor: VENDOR_LIBS,
-    },
-    output: {
-      path: path.join(__dirname, 'dist'),
-      // add hash in the filename
-      filename: '[name].[chunkhash].js',
-    },
-    plugins: [
-      // add manifest.js
-      new webpack.optimize.CommonsChunkPlugin({ names: ['vendor', 'manifest'] }),
-      new HtmlWebpackPlugin({ template: 'src/index.html' })
     ],
   }
   ```
@@ -311,13 +318,13 @@ System.import('URL'):
 
 ### Webpack Dev Server
 
-Installation via npm
+Installation via npm.
 
 ```bash
 $ npm install -D webpack-dev-server
 ```
 
-Script configuration
+Add script in package.json file.
 
 ```javascript
 {
