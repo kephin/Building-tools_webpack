@@ -172,6 +172,43 @@ module.exports = config;
 
 But loading CSS in a separate file is a lot faster than inside the style tag because the browser will download them parallel. To make it spit out a single CSS file, we need to use **ExtractTextWebpackPlugin**, check [CSS code splitting](#code-splitting---css).
 
+**image-webpack-loader & url-loader**
+
+- image-webpack-loader:
+
+  Compress the image automatically.
+
+- url-loader:
+
+  Behaves differently depends on the size of the image. If the size is small, it'll be included inside bundle.js file as the raw data. On the other hand, if the image is big, then the whole image will be saved into the build directory.
+
+```bash
+$ npm install image-webpack-loader url-loader -D
+```
+
+```javascript
+// webpack.config.js
+const config = {
+  output:{
+    path: path.resolve(__dirname, 'build'),
+    filename: 'bundle.js',
+    // url-loader will emit the image URL prepended with 'output.publicPath'
+    publicPath: 'build/',
+  }
+  module: {
+    rules: [{
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      use: [
+        // load image-webpack-loader first
+        { loader: 'url-loader', options: { limit: 40000 } },
+        'image-webpack-loader'
+      ]
+    }]
+  }
+};
+module.exports = config;
+```
+
 :electric_plug: **Plugins**
 
 In order to use a plugin, we need to require() it and add it to the plugins array. Most plugins are customizable via options.
