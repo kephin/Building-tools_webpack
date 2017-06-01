@@ -149,6 +149,29 @@ const config = {
 module.exports = config;
 ```
 
+**css-loader & style-loader**
+
+|Module|Purpose|
+|:---|:---|
+|css-loader|Teaches babel how to deal with CSS import|
+|style-loader|Takes CSS imports and adds them to the style tag of HTML|
+
+Css-loader & style-loader let us import CSS files and then inject then into HTML document.
+
+```javascript
+// webpack.config.js
+const config = {
+  module: {
+    test: /\.css$/,
+    // the order matters, webpack executes from right to left
+    rules: ['style-loader', 'css-loader'],
+  },
+};
+module.exports = config;
+```
+
+But loading CSS in a separate file is a lot faster than inside the style tag because the browser will download them parallel. To make it spit out a single CSS file, we need to use **ExtractTextWebpackPlugin**, check [CSS code splitting](#code-splitting---css).
+
 :electric_plug: **Plugins**
 
 In order to use a plugin, we need to require() it and add it to the plugins array. Most plugins are customizable via options.
