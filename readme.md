@@ -83,6 +83,72 @@ Two configurations should be added in module.rules:
 - Test property: Identify what files should be transformed by a certain loader.
 - Use property: Transform that file so that it can be added to your dependency graph (and eventually your bundle).
 
+**babel-loader**
+
+|Module|Purpose|
+|:---|:---|
+|babel-loader|Teaches babel how to work with webpack|
+|babel-core|How to take in code, parse it and generate output files|
+|babel-preset-env|Rules of telling babel how to transpile ES6/7 syntax to ES5 code|
+
+Installation via npm.
+
+```bash
+$ npm install babel-loader babel-core babel-preset-env -D
+```
+
+Configure in webpack.config.js file.
+
+```javascript
+const config = {
+  module: {
+    rules: [{
+      // specify the type of files we will apply
+      test: /\.js$/,
+      // except for some files
+      exclude: /(node_modules)/,
+      use: 'babel-loader',
+    }],
+  },
+};
+module.exports = config;
+```
+
+Create **.babelrc** for presets.
+
+```javascript
+{
+  "presets": [
+    ["env", { "targets": { "chrome": 58 } }]
+    // ['env', { targets: ['last 2 versions', 'chrome 58'] }]
+    // ['env', { targets: { node: 'current' } }]
+  ]
+}
+```
+
+Or we can can put them altogether.
+
+```javascript
+// webpack.config.js
+const config = {
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['env', { targets: { chrome: 58 } }]
+          ],
+        },
+      }],
+    }],
+  },
+};
+module.exports = config;
+```
+
 :electric_plug: **Plugins**
 
 In order to use a plugin, we need to require() it and add it to the plugins array. Most plugins are customizable via options.
