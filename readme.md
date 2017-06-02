@@ -399,10 +399,14 @@ module.exports = {
 
 This allows you to serve a minimal bootstrap bundle first and to asynchronously load additional features later.
 
-First of all, we need to install the *syntax-dynamic-import* plugin in order to use **import** syntax.
+First of all, we need to install the *syntax-dynamic-import* plugin in order to use **import()** syntax.
+
+import('URL'):
+ - When we execute this function call, the browser will reach out back to the server with the URL to fetch the module and send back to the client in order to be executed.
+ - Asynchronous
 
 ```bash
-$ npm install babel-plugin-syntax-dynamic-import -D
+$ npm install -D babel-plugin-syntax-dynamic-import
 ```
 
 ```javascript
@@ -416,7 +420,7 @@ const config = {
         loader: 'babel-loader',
         options: {
           presets: ['env'],
-          // add plugins for import syntax
+          // add plugins for import() syntax
           plugins: ['syntax-dynamic-import'],
         },
       }],
@@ -438,9 +442,24 @@ button.onclick() = () => {
 document.body.appendChild('button');
 ```
 
-System.import('URL'):
- - When we execute this function call, the browser will reach out back to the server with the URL to fetch the module and send back to the client in order to be executed.
- - Asynchronous
+:fire: Note that we are using the Promise.then() syntax. To use ES2017 async/await with **import()**, we need to install packages below.
+
+```bash
+$ npm install -D babel-plugin-transform-async-to-generator babel-plugin-transform-regenerator babel-plugin-transform-runtime babel-plugin-syntax-async-functions
+```
+
+Now we can use async/await syntax.
+
+```javascript
+// index.js
+const button = document.createElement('button');
+button.innerText = 'Click me';
+button.onclick() = async () => {
+  const module = await import('./image_viewer');
+  module.default();
+}
+document.body.appendChild('button');
+```
 
 ### Webpack Dev Server
 
