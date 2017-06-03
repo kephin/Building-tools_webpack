@@ -7,6 +7,7 @@
 |3.|[Handling project assets](#handling-project-assets)|
 |4.|[Enhance Performance with Code splitting](#enhance-performance-with-code-splitting)|
 |5.|[Webpack dev server](#webpack-dev-server)|
+|6.|[Webpack-based deployment](#webpack-based-deployment)|
 
 ### Why do we use building tools?
 
@@ -494,3 +495,18 @@ If you change the webpack.config.js file, you have to restart the **webpack-dev-
 When you run **webpack-dev-server**, it internally will execute **webpack** but it stops **webpack** from actually saving any built files in our project directory, instead, it saves all the files in memory. So we will not see the built files in the project folder.
 
 **webpack-dev-server** is only for development and not for production use.
+
+### Webpack-based deployment
+
+**Static website**
+
+- Surge
+- Github
+- AWS S3
+
+**Dynamic website**
+
+Node and webpack integration
+
+- Heroku
+- AWS
