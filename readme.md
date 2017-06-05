@@ -366,7 +366,8 @@ We can do this only when we separate the bundles for **vendor** and **applicatio
   {
     "scripts": {
       "clean": "rimraf dist",
-      "build": "npm run clean && webpack"
+      "prebuild": "npm run clean",
+      "build": "webpack"
     }
   }
   ```
@@ -486,7 +487,7 @@ No when we run
 $ npm serve
 ```
 
-**webpack-dev-server** will try to build the project and start the server on *http://localhost:8080*
+**webpack-dev-server** will try to build the project and start the server on local host port 8080.
 
 **webpack-dev-server** will watch for any changes that we made to our project files, and when it sees changes, it will automatically rebuild the project for us. The key point here is: It doesn't rebuild the whole project, it only rebuild the changed file. The benefit is we can dramatically reduce the build time.
 
@@ -498,15 +499,86 @@ When you run **webpack-dev-server**, it internally will execute **webpack** but 
 
 ### Webpack-based deployment
 
+Set webpack to production mode while build.
+
+```javascript
+{
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "webpack -p",
+    "serve": "webpack-dev-server"
+  },
+}
+```
+
+Running *webpack -p* (or equivalently *webpack --optimize-minimize --define process.env.NODE_ENV="production"*). This performs the following steps:
+
+- Minification using **UglifyJsPlugin** (note that we should configure Babel to transform JavaScript down to ES5 syntax because **UglifyJs only supports ES5 syntax**)
+- Runs the LoaderOptionsPlugin (only for migration)
+- Sets the NodeJS environment variable triggering certain packages to compile differently
+
 **Static website**
 
 - Surge
+
+  ```bash
+  # installation
+  $ npm install -g surge
+
+  # deploy
+  $ surge
+  # or specify certain path by parameter
+  $ surge dist
+  
+  # list all projects
+  $ surge list
+  # remove certain project
+  $ surge teardown
+  ```
+
 - Github
 - AWS S3
 
 **Dynamic website**
 
-Node and webpack integration
+:cyclone: Node and webpack integration
+
+- webpack middleware in development: run webpack and make sure that it watches over files and changes and rebuild our project.
+- webpack middleware in production: serve up the compiled application
+
+```bash
+$ npm install -D webpack-dev-middleware
+```
+
+```javascript
+const express = require('express');
+const path = require('path');
+
+const app = express();
+
+// server routes...
+app.get('', (req, res) => {
+  res.json({ hi: 'there' });
+});
+
+if(process.env.NODE_ENV !== 'production') {
+  const webpackMiddleware = require('webpack-dev-middleware');
+  const webpack = require('webpack');
+  const webpackConfig = require('./webpack.config.js');
+  app.use(webpackMiddleware(webpack(webpackConfig)));
+} else {
+  app.use(express.static('dist'));
+  // specifically for compatibility with React Router with browser history module
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/index.html'));
+  });
+}
+
+app.listen(process.env.PORT || 3050, () => console.log('Listening...'));
+```
+
+How do we add some logic for handling authentication or working with the database to expand our server.js file? To do that, we should add additional route **above** the webpack configuration
 
 - Heroku
 - AWS
